@@ -5,6 +5,9 @@
  * License ("GPL") version 3, as published by the Free Software Foundation.
  */
 
+#ifndef __PAD_H__
+#define __PAD_H__
+
 #include <stdbool.h>
 #include <malloc.h>
 #include <string.h>
@@ -13,12 +16,12 @@
 #include <sysutil/sysutil.h>
 #include <sys/cond.h>
 
+#include "main.h"
+
 #define PAD_OPTION_EXIT 1
 
 #define XMB_MUTEX_TIMEOUT 0
 #define XMB_COND_TIMEOUT 0
-
-void thread_exit();
 
 int pad_wait_xmb();
 
@@ -29,3 +32,5 @@ sys_cond_t pad_get_xmb_cond();
 
 void sysutil_callback(u64 status, u64 param, void *usrdata);
 void pad_thread(void* param);
+
+#endif /* __PAD_H__ */

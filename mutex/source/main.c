@@ -20,24 +20,6 @@ void thread_exit() {
 	sysThreadExit(0);
 }
 
-void program_thread(void* param) {
-	//Get exit.
-	bool* exit = (bool*) param;
-
-	//Loop.
-	while(!*exit) {
-		//Wait if XMB is open.
-		pad_wait_xmb();
-
-		//Beep every two seconds.
-		buzzer();
-		sleep(2);
-	}
-
-	//Exit thread.
-	thread_exit();
-}
-
 int main(s32 argc, const char* argv[]) {
 	//Mutex.
 	sys_mutex_attr_t attr;
