@@ -20,6 +20,8 @@
 
 void thread_exit();
 
+int pad_wait_xmb();
+
 bool pad_get_xmb_exit();
 bool pad_get_xmb();
 sys_mutex_t pad_get_xmb_mutex();

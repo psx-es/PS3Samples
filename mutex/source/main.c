@@ -12,13 +12,6 @@ bool GLOBAL_EXIT = false;
 sys_mutex_t thread_mutex;
 int THREADS_RUNNING;
 
-void lv2buzzersc(u64 loudness, u8 quantity, u32 type) {
-	lv2syscall3(392, loudness, quantity, type);
-}
-void lv2buzzer() {
-	lv2buzzersc(0x1004, 0xa, 0x1b6);
-}
-
 void thread_exit() {
 	sysMutexLock(thread_mutex, TIMEOUT_MUTEX);
 	THREADS_RUNNING--;
@@ -37,7 +30,7 @@ void program_thread(void* param) {
 		pad_wait_xmb();
 
 		//Beep every two seconds.
-		lv2buzzer();
+		buzzer();
 		sleep(2);
 	}
 

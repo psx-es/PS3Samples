@@ -6,6 +6,7 @@
 
 #include "rsxutil.h"
 #include "pad.h"
+#include "buzzer.h"
 
 #define MAX_BUFFERS 2
 

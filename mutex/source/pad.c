@@ -125,6 +125,8 @@ int pad_wait_xmb() {
 		sysMutexLock(xmb_mutex, XMB_MUTEX_TIMEOUT);
 		sysCondWait(xmb_cond, XMB_COND_TIMEOUT);
 		sysMutexUnlock(xmb_mutex);
+
+		return 0;
 	}
 }
 
