@@ -1,0 +1,7 @@
+*.pkg
+*.PKG
+build*
+*.elf
+*.ELF
+*.self
+*.SELF
