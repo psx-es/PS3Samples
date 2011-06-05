@@ -47,7 +47,7 @@ int main(s32 argc, const char* argv[]) {
 	host_addr = memalign(1024*1024, HOST_SIZE);
 	context = initScreen(host_addr, HOST_SIZE);
 
-	//Get resolution and set usable screen and font size.
+	//Get resolution.
 	u16 width, height;
 	getResolution(&width, &height);
 

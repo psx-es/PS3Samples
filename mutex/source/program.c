@@ -20,9 +20,9 @@ void program_thread(void* param) {
 		if(pad_wait_opt(PAD_OPTION_BEEP) < 0 || *exit) {
 			continue;
 		}
-
 		buzzer();
 
+		//Sleep to avoid beeping twice.
 		usleep(PROGRAM_SLEEP);
 	}
 
