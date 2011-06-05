@@ -50,8 +50,6 @@ int main(s32 argc, const char* argv[]) {
 	}
 	flip(context, MAX_BUFFERS - 1);
 
-	buzzer();
-
 	//Main loop.
 	while(THREADS_RUNNING > 0) {
 		//Prepare buffer.
