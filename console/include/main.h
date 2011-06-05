@@ -11,6 +11,9 @@
 #define MUTEX_TIMEOUT 0
 #define COND_TIMEOUT 0
 
+//#define DEBUG_INFO 1
+#define DEBUG_FONT_COLOR 0xFFFF0000
+
 void thread_exit();
 int console_print(char* string);
 int console_save(char* string);

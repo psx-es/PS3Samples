@@ -35,7 +35,7 @@ int main(s32 argc, const char* argv[]) {
 	//Console config.
 	console_config config = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, "Purisa"};
 	config.screen_color = 0xFFFFFFFF;
-	config.font_color = 0x00000000;
+	config.font_color = 0xFF000000;
 	config.font_size_div = FONT_SIZE_TINY;
 	config.font_margin_div = FONT_MARGIN_DIV;
 
@@ -250,23 +250,44 @@ void draw_console(rsxBuffer *buffer, console_config config, int frame) {
 				}
 			}
 
-			char buffer[128];
-			double debug_x = config.width_max - 20 * config.font_size;
-			double debug_y = config.height_min;
+			//Debug info.
+			#if defined(DEBUG_INFO)
+				cairo_text_extents_t extents;
 
-			sprintf(buffer, "Print Status: %d", print_status);
-			cairo_move_to(cr, debug_x, debug_y);
-			cairo_show_text(cr, buffer);
-			debug_y += config.font_size + config.font_margin;
+				cairo_set_source_rgb(cr, (DEBUG_FONT_COLOR >> 16) & 0xFF, (DEBUG_FONT_COLOR >> 8) & 0xFF, DEBUG_FONT_COLOR & 0xFF);
 
-			sprintf(buffer, "Frames: %d", frame);
-			cairo_move_to(cr, debug_x, debug_y);
-			cairo_show_text(cr, buffer);
-			debug_y += config.font_size + config.font_margin;
+				char string[128];
+				double debug_x = config.width_max - 20 * config.font_size;
+				double debug_y = config.height_min;
 
-			sprintf(buffer, "Prints: %d", console_prints);
-			cairo_move_to(cr, debug_x, debug_y);
-			cairo_show_text(cr, buffer);
+				sprintf(string, "~DEBUG~");
+				cairo_text_extents(cr, string, &extents);
+				debug_x = config.width_max - extents.width;
+				cairo_move_to(cr, debug_x, debug_y);
+				cairo_show_text(cr, string);
+				debug_y += config.font_size + config.font_margin;
+
+				sprintf(string, "Frames: %d", frame);
+				cairo_text_extents(cr, string, &extents);
+				debug_x = config.width_max - extents.width;
+				cairo_move_to(cr, debug_x, debug_y);
+				cairo_show_text(cr, string);
+				debug_y += config.font_size + config.font_margin;
+
+				sprintf(string, "Prints: %d", console_prints);
+				cairo_text_extents(cr, string, &extents);
+				debug_x = config.width_max - extents.width;
+				cairo_move_to(cr, debug_x, debug_y);
+				cairo_show_text(cr, string);
+				debug_y += config.font_size + config.font_margin;
+
+				sprintf(string, "Print Status: %d", print_status);
+				cairo_text_extents(cr, string, &extents);
+				debug_x = config.width_max - extents.width;
+				cairo_move_to(cr, debug_x, debug_y);
+				cairo_show_text(cr, string);
+				debug_y += config.font_size + config.font_margin;
+			#endif
 
 			//Realease Surface.
 			cairo_destroy(cr);
