@@ -17,6 +17,7 @@
 #include "rsxutil.h"
 #include "pad.h"
 #include "program.h"
+#include "buzzer.h"
 
 #define MAX_BUFFERS 2
 

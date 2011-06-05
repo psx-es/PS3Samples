@@ -16,9 +16,14 @@ void program_thread(void* param) {
 		//Wait if XMB is open.
 		pad_wait_xmb();
 
-		//Beep every two seconds.
+		//Beep?.
+		if(pad_wait_opt(PAD_OPTION_BEEP) < 0 || *exit) {
+			continue;
+		}
+
 		buzzer();
-		sleep(2);
+
+		usleep(PROGRAM_SLEEP);
 	}
 
 	//Exit thread.

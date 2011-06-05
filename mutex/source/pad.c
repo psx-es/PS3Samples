@@ -15,6 +15,7 @@ sys_cond_t xmb_cond;
 
 sys_mutex_t* opt_mutex;
 sys_cond_t* opt_cond;
+bool opt_init = false;
 
 /**
  * PAD Thread.
@@ -49,6 +50,7 @@ void pad_thread(void* param) {
 		sysMutexCreate(&opt_mutex[i], &mutex_attr);
 		sysCondCreate(&opt_cond[i], opt_mutex[i], &cond_attr);
 	}
+	opt_init = true;
 
 	//Pad init.
 	padInfo padinfo;
@@ -68,6 +70,7 @@ void pad_thread(void* param) {
 		if(XMB_EXIT) {
 			*exit = true;
 			pad_signal_opt(PAD_OPTION_EXIT);
+			pad_signal_all_opt();
 		}
 		//XMB?
 		else if(!XMB) {
@@ -79,14 +82,20 @@ void pad_thread(void* param) {
 					if(paddata.BTN_TRIANGLE) {
 						option = PAD_OPTION_EXIT;
 					}
+					else if(paddata.BTN_START) {
+						option = PAD_OPTION_BEEP;
+					}
 				}
 			}
 
 			//Check option selected.
 			if(option == PAD_OPTION_EXIT) {
 				*exit = true;
-
-				pad_signal_opt(PAD_OPTION_EXIT);
+				pad_signal_opt(option);
+				pad_signal_all_opt();
+			}
+			else if(option > 0) {
+				pad_signal_opt(option);
 			}
 		}
 	}
@@ -152,22 +161,45 @@ int pad_signal_xmb() {
  * Waits an option to be activated.
  */
 int pad_wait_opt(int option) {
-	if(option >= PAD_MIN && option <= PAD_OPTIONS) {
-		sysMutexLock(opt_mutex[option - 1], XMB_MUTEX_TIMEOUT);
-		sysCondWait(opt_cond[option - 1], XMB_COND_TIMEOUT);
-		sysMutexUnlock(opt_mutex[option - 1]);
+	if(opt_init) {
+		if(option >= PAD_MIN && option <= PAD_OPTIONS) {
+			sysMutexLock(opt_mutex[option - 1], XMB_MUTEX_TIMEOUT);
+			sysCondWait(opt_cond[option - 1], XMB_COND_TIMEOUT);
+			sysMutexUnlock(opt_mutex[option - 1]);
 
-		return 0;
+			return 0;
+		}
+		else {
+			return -1;
+		}
 	}
 	else {
-		return -1;
+		return -2;
 	}
 }
 int pad_signal_opt(int option) {
-	if(option >= PAD_MIN && option <= PAD_OPTIONS) {
-		sysMutexLock(opt_mutex[option - 1], XMB_MUTEX_TIMEOUT);
-		sysCondBroadcast(opt_cond[option - 1]);
-		sysMutexUnlock(opt_mutex[option - 1]);
+	if(opt_init) {
+		if(option >= PAD_MIN && option <= PAD_OPTIONS) {
+			sysMutexLock(opt_mutex[option - 1], XMB_MUTEX_TIMEOUT);
+			sysCondBroadcast(opt_cond[option - 1]);
+			sysMutexUnlock(opt_mutex[option - 1]);
+
+			return 0;
+		}
+		else {
+			return -1;
+		}
+	}
+	else {
+		return -2;
+	}
+}
+int pad_signal_all_opt() {
+	if(opt_init) {
+		int i;
+		for(i = 0; i < PAD_OPTIONS; i++) {
+			pad_signal_opt(i + 1);
+		}
 
 		return 0;
 	}

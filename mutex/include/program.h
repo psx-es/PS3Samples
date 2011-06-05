@@ -13,6 +13,8 @@
 #include "buzzer.h"
 #include "pad.h"
 
+#define PROGRAM_SLEEP 500000
+
 void program_thread(void* param);
 
 #endif /* __PROGRAM_H__ */
