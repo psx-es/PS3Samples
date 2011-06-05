@@ -138,15 +138,15 @@ void sysutil_callback(u64 status, u64 param, void *usrdata) {
  * If XMB is open waits until it's closed.
  */
 int pad_wait_xmb() {
-	if(!XMB) {
-		return -1;
-	}
-	else {
+	if(XMB) {
 		sysMutexLock(xmb_mutex, XMB_MUTEX_TIMEOUT);
 		sysCondWait(xmb_cond, XMB_COND_TIMEOUT);
 		sysMutexUnlock(xmb_mutex);
 
 		return 0;
+	}
+	else {
+		return -1;
 	}
 }
 int pad_signal_xmb() {
