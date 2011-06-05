@@ -12,14 +12,6 @@ bool GLOBAL_EXIT = false;
 sys_mutex_t thread_mutex;
 int THREADS_RUNNING;
 
-void thread_exit() {
-	sysMutexLock(thread_mutex, TIMEOUT_MUTEX);
-	THREADS_RUNNING--;
-	sysMutexUnlock(thread_mutex);
-
-	sysThreadExit(0);
-}
-
 int main(s32 argc, const char* argv[]) {
 	//Mutex.
 	sys_mutex_attr_t attr;
@@ -88,4 +80,12 @@ int main(s32 argc, const char* argv[]) {
 	sysMutexDestroy(thread_mutex);
 
 	return 0;
+}
+
+void thread_exit() {
+	sysMutexLock(thread_mutex, TIMEOUT_MUTEX);
+	THREADS_RUNNING--;
+	sysMutexUnlock(thread_mutex);
+
+	sysThreadExit(0);
 }
