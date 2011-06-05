@@ -27,6 +27,9 @@
 #define XMB_MUTEX_TIMEOUT 0
 #define XMB_COND_TIMEOUT 0
 
+#define OPT_MUTEX_TIMEOUT 0
+#define OPT_COND_TIMEOUT 0
+
 void pad_thread(void* param);
 void sysutil_callback(u64 status, u64 param, void *usrdata);
 

@@ -170,8 +170,8 @@ int pad_signal_xmb() {
 int pad_wait_opt(int option) {
 	if(opt_init) {
 		if(option >= PAD_MIN && option <= PAD_OPTIONS) {
-			sysMutexLock(opt_mutex[option - 1], XMB_MUTEX_TIMEOUT);
-			sysCondWait(opt_cond[option - 1], XMB_COND_TIMEOUT);
+			sysMutexLock(opt_mutex[option - 1], OPT_MUTEX_TIMEOUT);
+			sysCondWait(opt_cond[option - 1], OPT_COND_TIMEOUT);
 			sysMutexUnlock(opt_mutex[option - 1]);
 
 			return 0;
@@ -187,7 +187,7 @@ int pad_wait_opt(int option) {
 int pad_signal_opt(int option) {
 	if(opt_init) {
 		if(option >= PAD_MIN && option <= PAD_OPTIONS) {
-			sysMutexLock(opt_mutex[option - 1], XMB_MUTEX_TIMEOUT);
+			sysMutexLock(opt_mutex[option - 1], OPT_MUTEX_TIMEOUT);
 			sysCondBroadcast(opt_cond[option - 1]);
 			sysMutexUnlock(opt_mutex[option - 1]);
 
