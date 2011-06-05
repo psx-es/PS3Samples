@@ -135,6 +135,13 @@ void sysutil_callback(u64 status, u64 param, void *usrdata) {
 }
 
 /**
+ * Check XMB status.
+ */
+bool pad_xmb_status() {
+	return XMB;
+}
+
+/**
  * If XMB is open waits until it's closed.
  */
 int pad_wait_xmb() {

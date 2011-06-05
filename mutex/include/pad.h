@@ -27,14 +27,16 @@
 #define XMB_MUTEX_TIMEOUT 0
 #define XMB_COND_TIMEOUT 0
 
+void pad_thread(void* param);
+void sysutil_callback(u64 status, u64 param, void *usrdata);
+
+bool pad_xmb_status();
+
 int pad_wait_xmb();
 int pad_signal_xmb();
 
 int pad_wait_opt(int option);
 int pad_signal_opt(int option);
 int pad_signal_all_opt();
-
-void sysutil_callback(u64 status, u64 param, void *usrdata);
-void pad_thread(void* param);
 
 #endif /* __PAD_H__ */
