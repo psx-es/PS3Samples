@@ -28,7 +28,7 @@ ICON0		:=	$(CURDIR)/misc/ICON0.PNG
 SFOXML		:=	$(CURDIR)/misc/sfo.xml
 PKGFILES	:=	$(CURDIR)/release
 
-APPID		:=	CONSOLE00
+APPID		:=	SAMPLE000
 CONTENTID	:=	TOOL01-$(APPID)_00-E3D75E05E19B6152
 
 #---------------------------------------------------------------------------------
