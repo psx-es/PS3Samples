@@ -7,15 +7,15 @@
 
 #include "pad.h"
 
+int option;
+sys_mutex_t option_mutex;
+sys_cond_t beep_largeline_cond;
+
 bool XMB = false;
 bool XMB_EXIT = false;
 
 sys_mutex_t xmb_mutex;
 sys_cond_t xmb_cond;
-
-sys_mutex_t* opt_mutex;
-sys_cond_t* opt_cond;
-bool opt_init = false;
 
 /**
  * PAD Thread.
@@ -40,17 +40,9 @@ void pad_thread(void* param) {
 
 	//XMB Signal.
 	sysMutexCreate(&xmb_mutex, &mutex_attr);
+	sysMutexCreate(&option_mutex, &mutex_attr);
 	sysCondCreate(&xmb_cond, xmb_mutex, &cond_attr);
-
-	//Create option mutex & signals.
-	opt_mutex = malloc(sizeof(sys_mutex_t) * PAD_OPTIONS);
-	opt_cond = malloc(sizeof(sys_cond_t) * PAD_OPTIONS);
-	int i;
-	for(i = 0; i < PAD_OPTIONS; i++) {
-		sysMutexCreate(&opt_mutex[i], &mutex_attr);
-		sysCondCreate(&opt_cond[i], opt_mutex[i], &cond_attr);
-	}
-	opt_init = true;
+	sysCondCreate(&beep_largeline_cond, option_mutex, &cond_attr);
 
 	//Pad init.
 	padInfo padinfo;
@@ -61,7 +53,6 @@ void pad_thread(void* param) {
 	sysUtilRegisterCallback(SYSUTIL_EVENT_SLOT0, sysutil_callback, NULL);
 
 	//Pad loop.
-	int option;
 	while(!*exit) {
 		//XMB check.
 		sysUtilCheckCallback();
@@ -69,7 +60,6 @@ void pad_thread(void* param) {
 		//XMB Exit?
 		if(XMB_EXIT) {
 			*exit = true;
-			pad_signal_opt(PAD_OPTION_EXIT);
 			pad_signal_all_opt();
 			break;
 		}
@@ -77,6 +67,11 @@ void pad_thread(void* param) {
 		else if(!XMB) {
 			//Pad check.
 			ioPadGetInfo(&padinfo);
+
+			//Lock option selected.
+			sysMutexLock(option_mutex, MUTEX_TIMEOUT);
+
+			int i;
 			for(i = 0, option = 0; i < MAX_PADS; i++) {
 				if(padinfo.status[i]) {
 					ioPadGetData(i, &paddata);
@@ -86,18 +81,25 @@ void pad_thread(void* param) {
 					else if(paddata.BTN_START) {
 						option = PAD_OPTION_BEEP;
 					}
+					else if(paddata.BTN_SELECT) {
+						option = PAD_OPTION_LARGELINE;
+					}
 				}
 			}
+
+			//Unlock option selected.
+			sysMutexUnlock(option_mutex);
 
 			//Check option selected.
 			if(option == PAD_OPTION_EXIT) {
 				*exit = true;
-				pad_signal_opt(option);
+
 				pad_signal_all_opt();
+
 				break;
 			}
-			else if(option > 0) {
-				pad_signal_opt(option);
+			else if(PAD_OPTION_BEEP || PAD_OPTION_LARGELINE) {
+				pad_signal_beep_largeline();
 			}
 		}
 	}
@@ -113,10 +115,8 @@ void pad_thread(void* param) {
 
 	//Mutex & Cond destroy.
 	sysMutexDestroy(xmb_mutex);
-	for(i = 0; i < PAD_OPTIONS; i++) {
-		sysMutexDestroy(opt_mutex[i]);
-		sysCondDestroy(opt_cond[i]);
-	}
+	sysMutexDestroy(option_mutex);
+	sysCondDestroy(beep_largeline_cond);
 
 	//Exit thread.
 	thread_exit();
@@ -187,48 +187,33 @@ int pad_signal_xmb() {
 }
 
 /**
- * Waits an option to be activated.
+ * Custom signal.
  */
-int pad_wait_opt(int option) {
-	if(opt_init) {
-		if(option >= PAD_MIN && option <= PAD_OPTIONS) {
-			pad_wait(opt_mutex[option - 1], opt_cond[option - 1]);
+int pad_wait_beep_largeline() {
+	sysMutexLock(option_mutex, MUTEX_TIMEOUT);
+	sysCondWait(beep_largeline_cond, COND_TIMEOUT);
 
-			return 0;
-		}
-		else {
-			return -1;
-		}
-	}
-	else {
-		return -2;
-	}
-}
-int pad_signal_opt(int option) {
-	if(opt_init) {
-		if(option >= PAD_MIN && option <= PAD_OPTIONS) {
-			pad_signal(opt_mutex[option - 1], opt_cond[option - 1]);
+	int ret = option;
 
-			return 0;
-		}
-		else {
-			return -1;
-		}
-	}
-	else {
-		return -2;
-	}
+	sysMutexUnlock(option_mutex);
+
+	return ret;
 }
+int pad_signal_beep_largeline() {
+	pad_signal(option_mutex, beep_largeline_cond);
+
+	return 0;
+}
+
+/**
+ * Signals all options.
+ */
 int pad_signal_all_opt() {
-	if(opt_init) {
-		int i;
-		for(i = 0; i < PAD_OPTIONS; i++) {
-			pad_signal_opt(i + 1);
-		}
+	//Unblock XMB waiting.
+	pad_signal_xmb();
 
-		return 0;
-	}
-	else {
-		return -1;
-	}
+	//Unblock other waitings.
+	pad_signal_beep_largeline();
+
+	return 0;
 }

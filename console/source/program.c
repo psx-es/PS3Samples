@@ -13,23 +13,34 @@ void program_thread(void* param) {
 
 	//Loop.
 	int beep = 0;
-	char string[128];
+	char string[1024];
 	while(!*exit) {
 		//Wait if XMB is open.
 		pad_wait_xmb();
 
 		//Beep?.
-		if(pad_wait_opt(PAD_OPTION_BEEP) < 0 || *exit) {
+		int option = pad_wait_beep_largeline();
+		if(*exit) {
 			continue;
 		}
-		beep++;
 
-		sprintf(string, "Beep [%d]", beep);
-		console_print(string);
-		buzzer();
+		if(option == PAD_OPTION_BEEP) {
+			beep++;
 
-		//Sleep to avoid beeping twice.
-		usleep(PROGRAM_SLEEP);
+			sprintf(string, "Beep [%d]", beep);
+			console_print(string);
+			buzzer();
+
+			//Sleep to avoid beeping twice.
+			usleep(PROGRAM_SLEEP);
+		}
+		else if(option == PAD_OPTION_LARGELINE) {
+			sprintf(string, "This is a very very very large line to test window fitting of printed text. Remind that PSL1GHT Console is an open source project :D. 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
+			console_print(string);
+
+			//Sleep to avoid beeping twice.
+			usleep(PROGRAM_SLEEP);
+		}
 	}
 
 	console_print("[Program] Exiting...");

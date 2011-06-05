@@ -22,8 +22,7 @@
 
 #define PAD_OPTION_EXIT 1
 #define PAD_OPTION_BEEP 2
-#define PAD_OPTIONS 2
-#define PAD_MIN 1
+#define PAD_OPTION_LARGELINE 3
 
 void pad_thread(void* param);
 void sysutil_callback(u64 status, u64 param, void *usrdata);
@@ -36,8 +35,9 @@ void pad_signal(sys_mutex_t mutex, sys_cond_t cond);
 int pad_wait_xmb();
 int pad_signal_xmb();
 
-int pad_wait_opt(int option);
-int pad_signal_opt(int option);
+int pad_wait_beep_largeline();
+int pad_signal_beep_largeline();
+
 int pad_signal_all_opt();
 
 #endif /* __PAD_H__ */

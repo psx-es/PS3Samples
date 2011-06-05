@@ -114,7 +114,6 @@ int main(s32 argc, const char* argv[]) {
 		if(!pad_xmb_status() && print_status != 1) {
 			if(print_status != 2) {
 				sysMutexLock(print_mutex, MUTEX_TIMEOUT);
-				//print_status = 1;
 				sysCondSignal(print_cond);
 				sysMutexUnlock(print_mutex);
 			}
