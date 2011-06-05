@@ -154,13 +154,25 @@ bool pad_xmb_status() {
 }
 
 /**
+ * Waits a condition.
+ */
+void pad_wait(sys_mutex_t mutex, sys_cond_t cond) {
+	sysMutexLock(mutex, MUTEX_TIMEOUT);
+	sysCondWait(cond, COND_TIMEOUT);
+	sysMutexUnlock(mutex);
+}
+void pad_signal(sys_mutex_t mutex, sys_cond_t cond) {
+	sysMutexLock(mutex, MUTEX_TIMEOUT);
+	sysCondBroadcast(cond);
+	sysMutexUnlock(mutex);
+}
+
+/**
  * If XMB is open waits until it's closed.
  */
 int pad_wait_xmb() {
 	if(XMB) {
-		sysMutexLock(xmb_mutex, XMB_MUTEX_TIMEOUT);
-		sysCondWait(xmb_cond, XMB_COND_TIMEOUT);
-		sysMutexUnlock(xmb_mutex);
+		pad_wait(xmb_mutex, xmb_cond);
 
 		return 0;
 	}
@@ -169,9 +181,7 @@ int pad_wait_xmb() {
 	}
 }
 int pad_signal_xmb() {
-	sysMutexLock(xmb_mutex, XMB_MUTEX_TIMEOUT);
-	sysCondBroadcast(xmb_cond);
-	sysMutexUnlock(xmb_mutex);
+	pad_signal(xmb_mutex, xmb_cond);
 
 	return 0;
 }
@@ -182,9 +192,7 @@ int pad_signal_xmb() {
 int pad_wait_opt(int option) {
 	if(opt_init) {
 		if(option >= PAD_MIN && option <= PAD_OPTIONS) {
-			sysMutexLock(opt_mutex[option - 1], OPT_MUTEX_TIMEOUT);
-			sysCondWait(opt_cond[option - 1], OPT_COND_TIMEOUT);
-			sysMutexUnlock(opt_mutex[option - 1]);
+			pad_wait(opt_mutex[option - 1], opt_cond[option - 1]);
 
 			return 0;
 		}
@@ -199,9 +207,7 @@ int pad_wait_opt(int option) {
 int pad_signal_opt(int option) {
 	if(opt_init) {
 		if(option >= PAD_MIN && option <= PAD_OPTIONS) {
-			sysMutexLock(opt_mutex[option - 1], OPT_MUTEX_TIMEOUT);
-			sysCondBroadcast(opt_cond[option - 1]);
-			sysMutexUnlock(opt_mutex[option - 1]);
+			pad_signal(opt_mutex[option - 1], opt_cond[option - 1]);
 
 			return 0;
 		}

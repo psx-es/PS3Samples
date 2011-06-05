@@ -22,8 +22,13 @@
 
 #define MAX_BUFFERS 2
 
-#define TIMEOUT_COND 0
-#define TIMEOUT_MUTEX 0
+#define FONT_MARGIN_DIV 5
+
+#define FONT_SIZE_TINY 100
+#define FONT_SIZE_SMALL 50
+#define FONT_SIZE_NORMAL 33
+#define FONT_SIZE_BIG 25
+#define FONT_SIZE_UBERBIG 20
 
 typedef struct {
 	int screen_color;

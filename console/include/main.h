@@ -8,13 +8,8 @@
 #ifndef __MAIN_H__
 #define __MAIN_H__
 
-#define FONT_MARGIN_DIV 5
-
-#define FONT_SIZE_TINY 100
-#define FONT_SIZE_SMALL 50
-#define FONT_SIZE_NORMAL 33
-#define FONT_SIZE_BIG 25
-#define FONT_SIZE_UBERBIG 20
+#define MUTEX_TIMEOUT 0
+#define COND_TIMEOUT 0
 
 void thread_exit();
 int console_print(char* string);

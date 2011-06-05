@@ -113,14 +113,14 @@ int main(s32 argc, const char* argv[]) {
 		//Not XMB? -> Draw console.
 		if(!pad_xmb_status() && print_status != 1) {
 			if(print_status != 2) {
-				sysMutexLock(print_mutex, XMB_MUTEX_TIMEOUT);
+				sysMutexLock(print_mutex, MUTEX_TIMEOUT);
 				//print_status = 1;
 				sysCondSignal(print_cond);
 				sysMutexUnlock(print_mutex);
 			}
 
 			if(print_status != 1) {
-				sysMutexLock(print_mutex, XMB_MUTEX_TIMEOUT);
+				sysMutexLock(print_mutex, MUTEX_TIMEOUT);
 
 				//Draw into the unused buffer.
 				draw_console(&buffers[currentBuffer], config, frames);
@@ -284,8 +284,8 @@ void draw_console(rsxBuffer *buffer, console_config config, int frame) {
  * Don't call it from the main process because it will wait itself.
  */
 int console_print(char* string) {
-	sysMutexLock(print_mutex, TIMEOUT_MUTEX);
-	sysCondWait(print_cond, XMB_COND_TIMEOUT);
+	sysMutexLock(print_mutex, MUTEX_TIMEOUT);
+	sysCondWait(print_cond, COND_TIMEOUT);
 
 	print_status = 1;
 
@@ -336,7 +336,7 @@ int console_save(char* string) {
  * Exits a thread and decreases the thread counter.
  */
 void thread_exit() {
-	sysMutexLock(thread_mutex, TIMEOUT_MUTEX);
+	sysMutexLock(thread_mutex, MUTEX_TIMEOUT);
 	THREADS_RUNNING--;
 	sysMutexUnlock(thread_mutex);
 

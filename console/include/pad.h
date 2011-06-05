@@ -25,16 +25,13 @@
 #define PAD_OPTIONS 2
 #define PAD_MIN 1
 
-#define XMB_MUTEX_TIMEOUT 0
-#define XMB_COND_TIMEOUT 0
-
-#define OPT_MUTEX_TIMEOUT 0
-#define OPT_COND_TIMEOUT 0
-
 void pad_thread(void* param);
 void sysutil_callback(u64 status, u64 param, void *usrdata);
 
 bool pad_xmb_status();
+
+void pad_wait(sys_mutex_t mutex, sys_cond_t cond);
+void pad_signal(sys_mutex_t mutex, sys_cond_t cond);
 
 int pad_wait_xmb();
 int pad_signal_xmb();
